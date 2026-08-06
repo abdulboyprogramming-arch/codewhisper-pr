@@ -1,0 +1,9 @@
+---
+- name: Deploy CodeWhisper PR Frontend
+  hosts: frontend
+  become: yes
+  roles:
+    - frontend
+  vars:
+    image_tag: latest
+    api_url: http://backend:8000/api/v1

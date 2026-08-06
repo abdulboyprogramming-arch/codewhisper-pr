@@ -1,0 +1,32 @@
+---
+- name: Create application user
+  user:
+    name: "{{ app_user | default('codewhisper') }}"
+    system: yes
+    shell: /bin/false
+
+- name: Create application directory
+  file:
+    path: "{{ app_dir | default('/opt/codewhisper-pr') }}"
+    state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    mode: '0755'
+
+- name: Pull frontend Docker image
+  docker_image:
+    name: "codewhisper-pr/frontend"
+    tag: "{{ image_tag | default('latest') }}"
+    source: pull
+  ignore_errors: yes
+
+- name: Run frontend container
+  docker_container:
+    name: codewhisper-frontend
+    image: "codewhisper-pr/frontend:{{ image_tag | default('latest') }}"
+    state: started
+    restart_policy: unless-stopped
+    env:
+      NEXT_PUBLIC_API_URL: "{{ api_url | default('http://localhost:8000/api/v1') }}"
+    ports:
+      - "3000:3000"

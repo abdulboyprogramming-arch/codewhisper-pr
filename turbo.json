@@ -1,0 +1,50 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [
+    ".env",
+    ".env.local",
+    ".env.*.local"
+  ],
+  "globalEnv": [
+    "NODE_ENV",
+    "DATABASE_URL",
+    "REDIS_URL",
+    "PARITOK_API_KEY",
+    "LLM_API_KEY",
+    "SECRET_KEY"
+  ],
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [
+        "dist/**",
+        ".next/**",
+        "!.next/cache/**"
+      ]
+    },
+    "test": {
+      "dependsOn": ["build"],
+      "outputs": [],
+      "inputs": [
+        "src/**",
+        "tests/**",
+        "**/*.test.ts",
+        "**/*.test.tsx"
+      ]
+    },
+    "lint": {
+      "outputs": []
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "type-check": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "clean": {
+      "cache": false
+    }
+  }
+}

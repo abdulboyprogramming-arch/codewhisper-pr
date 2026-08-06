@@ -1,0 +1,39 @@
+---
+# Dev overlay - reduced resources and single replica
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: codewhisper-backend
+  namespace: codewhisper-pr
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+        - name: backend
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "250m"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: codewhisper-frontend
+  namespace: codewhisper-pr
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+        - name: frontend
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"

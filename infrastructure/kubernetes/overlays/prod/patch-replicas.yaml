@@ -1,0 +1,17 @@
+---
+# Production overlay - scaled up replicas
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: codewhisper-backend
+  namespace: codewhisper-pr
+spec:
+  replicas: 3
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: codewhisper-frontend
+  namespace: codewhisper-pr
+spec:
+  replicas: 3

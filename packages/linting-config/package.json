@@ -1,0 +1,13 @@
+{
+  "name": "@codewhisper/linting-config",
+  "version": "1.0.0",
+  "description": "Shared linting configuration for CodeWhisper PR",
+  "main": "eslint-config.js",
+  "scripts": {
+    "test": "echo \"No tests specified\""
+  },
+  "peerDependencies": {
+    "eslint": "^8.55.0",
+    "prettier": "^3.1.0"
+  }
+}

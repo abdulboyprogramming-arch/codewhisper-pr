@@ -1,0 +1,44 @@
+---
+- name: Create application user
+  user:
+    name: "{{ app_user | default('codewhisper') }}"
+    system: yes
+    shell: /bin/false
+
+- name: Create application directory
+  file:
+    path: "{{ app_dir | default('/opt/codewhisper-pr') }}"
+    state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    mode: '0755'
+
+- name: Copy environment file
+  template:
+    src: env.j2
+    dest: "{{ app_dir }}/.env"
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    mode: '0600'
+
+- name: Pull backend Docker image
+  docker_image:
+    name: "codewhisper-pr/backend"
+    tag: "{{ image_tag | default('latest') }}"
+    source: pull
+  ignore_errors: yes
+
+- name: Run backend container
+  docker_container:
+    name: codewhisper-backend
+    image: "codewhisper-pr/backend:{{ image_tag | default('latest') }}"
+    state: started
+    restart_policy: unless-stopped
+    env_file: "{{ app_dir }}/.env"
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

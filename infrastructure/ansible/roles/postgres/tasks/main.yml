@@ -1,0 +1,27 @@
+---
+- name: Install PostgreSQL
+  apt:
+    name:
+      - postgresql
+      - postgresql-contrib
+    state: present
+    update_cache: yes
+
+- name: Start and enable PostgreSQL
+  service:
+    name: postgresql
+    state: started
+    enabled: yes
+
+- name: Create database
+  postgresql_db:
+    name: codewhisper
+    state: present
+  become_user: postgres
+
+- name: Create database user
+  postgresql_user:
+    name: codewhisper
+    password: "{{ db_password | default('codewhisper') }}"
+    priv: all
+  become_user: postgres

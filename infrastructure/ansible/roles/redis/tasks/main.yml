@@ -1,0 +1,20 @@
+---
+- name: Install Redis
+  apt:
+    name: redis-server
+    state: present
+    update_cache: yes
+
+- name: Start and enable Redis
+  service:
+    name: redis-server
+    state: started
+    enabled: yes
+
+- name: Configure Redis maxmemory
+  lineinfile:
+    path: /etc/redis/redis.conf
+    regexp: '^#?maxmemory'
+    line: 'maxmemory 256mb'
+    backup: yes
+  notify: restart redis

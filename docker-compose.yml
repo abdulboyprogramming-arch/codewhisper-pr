@@ -1,0 +1,103 @@
+# ============================================================
+# CodeWhisper PR - Docker Compose Configuration
+# ============================================================
+
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: codewhisper-postgres
+    environment:
+      POSTGRES_USER: codewhisper
+      POSTGRES_PASSWORD: codewhisper123
+      POSTGRES_DB: codewhisper
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U codewhisper -d codewhisper"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - codewhisper-network
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: codewhisper-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --requirepass codewhisper123
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "codewhisper123", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - codewhisper-network
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    container_name: codewhisper-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://codewhisper:codewhisper123@postgres:5432/codewhisper
+      - REDIS_URL=redis://:codewhisper123@redis:6379
+      - PARITOK_API_KEY=${PARITOK_API_KEY}
+      - LLM_API_KEY=${LLM_API_KEY}
+      - SECRET_KEY=${SECRET_KEY}
+      - ENVIRONMENT=development
+      - DEBUG=true
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./apps/backend:/app
+      - /app/.venv
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+    networks:
+      - codewhisper-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile
+    container_name: codewhisper-frontend
+    ports:
+      - "3001:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+      - NEXT_PUBLIC_PARITOK_URL=http://localhost:8080
+    depends_on:
+      - backend
+    volumes:
+      - ./apps/frontend:/app
+      - /app/node_modules
+      - /app/.next
+    command: yarn dev
+    networks:
+      - codewhisper-network
+    restart: unless-stopped
+
+networks:
+  codewhisper-network:
+    name: codewhisper-network
+    driver: bridge
+
+volumes:
+  postgres_data:
+    name: codewhisper-postgres-data
+  redis_data:
+    name: codewhisper-redis-data

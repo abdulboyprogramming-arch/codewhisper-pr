@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-gray-900 text-gray-100 antialiased;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-gray-800 border border-gray-700 rounded-xl p-6;
+  }
+
+  .btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white focus:ring-primary-500;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-700 hover:bg-gray-600 text-gray-200 focus:ring-gray-500;
+  }
+
+  .btn-outline {
+    @apply border border-gray-600 hover:bg-gray-700 text-gray-300 focus:ring-gray-500;
+  }
+
+  .input {
+    @apply w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+}
+
+.custom-scrollbar {
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background: theme('colors.gray.900');
+  }
+  &::-webkit-scrollbar-thumb {
+    background: theme('colors.gray.600');
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: theme('colors.gray.500');
+  }
+}

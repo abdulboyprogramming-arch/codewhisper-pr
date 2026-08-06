@@ -1,0 +1,12 @@
+---
+- name: Deploy CodeWhisper PR Backend
+  hosts: backend
+  become: yes
+  roles:
+    - backend
+  vars:
+    image_tag: latest
+    database_url: postgresql://codewhisper:password@db:5432/codewhisper
+    redis_url: redis://redis:6379
+    secret_key: changeme-secret-key
+    openai_api_key: changeme-openai-key

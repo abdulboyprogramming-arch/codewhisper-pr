@@ -1,0 +1,100 @@
+# ============================================================
+# CodeWhisper PR - Backend Docker Compose
+# ============================================================
+
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    container_name: codewhisper-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://codewhisper:codewhisper123@postgres:5432/codewhisper
+      - REDIS_URL=redis://:codewhisper123@redis:6379
+      - PARITOK_API_KEY=${PARITOK_API_KEY}
+      - LLM_API_KEY=${LLM_API_KEY}
+      - SECRET_KEY=${SECRET_KEY}
+    volumes:
+      - ./src:/app/src
+      - ./alembic:/app/alembic
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - codewhisper-network
+
+  celery-worker:
+    build: .
+    container_name: codewhisper-celery-worker
+    command: celery -A src.workers.review_worker.celery_app worker --loglevel=info
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://codewhisper:codewhisper123@postgres:5432/codewhisper
+      - REDIS_URL=redis://:codewhisper123@redis:6379
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - codewhisper-network
+
+  celery-beat:
+    build: .
+    container_name: codewhisper-celery-beat
+    command: celery -A src.workers.review_worker.celery_app beat --loglevel=info
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://codewhisper:codewhisper123@postgres:5432/codewhisper
+      - REDIS_URL=redis://:codewhisper123@redis:6379
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - codewhisper-network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: codewhisper-postgres
+    environment:
+      POSTGRES_USER: codewhisper
+      POSTGRES_PASSWORD: codewhisper123
+      POSTGRES_DB: codewhisper
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U codewhisper"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - codewhisper-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: codewhisper-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --requirepass codewhisper123
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "codewhisper123", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - codewhisper-network
+
+networks:
+  codewhisper-network:
+    name: codewhisper-network
+    driver: bridge
+
+volumes:
+  postgres_data:
+    name: codewhisper-postgres-data
+  redis_data:
+    name: codewhisper-redis-data

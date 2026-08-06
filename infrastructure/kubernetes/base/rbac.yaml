@@ -1,0 +1,30 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: codewhisper-backend
+  namespace: codewhisper-pr
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: codewhisper-backend
+  namespace: codewhisper-pr
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "secrets"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: codewhisper-backend
+  namespace: codewhisper-pr
+subjects:
+  - kind: ServiceAccount
+    name: codewhisper-backend
+    namespace: codewhisper-pr
+roleRef:
+  kind: Role
+  name: codewhisper-backend
+  apiGroup: rbac.authorization.k8s.io

@@ -1,0 +1,13 @@
+---
+- name: Deploy full CodeWhisper PR stack
+  hosts: all
+  become: yes
+  roles:
+    - nginx
+    - postgres
+    - redis
+    - backend
+    - frontend
+  vars:
+    app_name: codewhisper-pr
+    app_user: codewhisper

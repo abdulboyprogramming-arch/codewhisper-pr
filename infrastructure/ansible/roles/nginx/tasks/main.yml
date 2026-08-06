@@ -1,0 +1,25 @@
+---
+- name: Install nginx
+  apt:
+    name: nginx
+    state: present
+    update_cache: yes
+
+- name: Configure nginx
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/codewhisper
+  notify: reload nginx
+
+- name: Enable nginx site
+  file:
+    src: /etc/nginx/sites-available/codewhisper
+    dest: /etc/nginx/sites-enabled/codewhisper
+    state: link
+  notify: reload nginx
+
+- name: Remove default site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: reload nginx
