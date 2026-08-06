@@ -2,46 +2,6 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
-jobs:
-  backend-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.11
-      - name: Install Poetry
-        run: pip install poetry
-      - name: Install dependencies
-        run: |
-          cd apps/backend
-          poetry config virtualenvs.create false
-          poetry install --no-interaction --no-ansi
-      - name: Run linters
-        run: |
-          cd apps/backend
-          poetry run ruff src tests || true
-      - name: Run tests
-        run: |
-          cd apps/backend
-          poetry run pytest -q
-      - name: Run type checks
-        run: |
-          cd apps/backend
-          poetry run mypy src || true
-# ============================================================
-# CodeWhisper PR - CI Workflow
-# ============================================================
-
-name: CI
-
-on:
-  push:
     branches: [main, develop]
   pull_request:
     branches: [main]
@@ -137,12 +97,12 @@ jobs:
           yarn install --frozen-lockfile
 
       - name: Run tests
-        run: |
-          cd apps/backend && poetry run pytest --timeout=60
-          yarn test
         env:
           DATABASE_URL: postgresql+asyncpg://codewhisper:codewhisper123@localhost:5432/codewhisper
           REDIS_URL: redis://localhost:6379
+        run: |
+          cd apps/backend && poetry run pytest --timeout=60
+          yarn test
 
   build:
     name: Build
