@@ -1,4 +1,4 @@
-# 🚀 CodeWhisper PR
+# CodeWhisper PR
 
 ## Token-Efficient AI Code Review Powered by Paritok
 
@@ -8,7 +8,7 @@
 
 ---
 
-## 🎯 Overview
+## Overview
 
 **CodeWhisper PR** is an AI-powered code review system that leverages **Paritok's token optimization** to deliver intelligent, cost-effective pull request analysis. By reducing input tokens by up to **74%**, we make AI code reviews affordable for every development team.
 
@@ -18,7 +18,7 @@
 
 ---
 
-## 🔥 The Problem We Solve
+## The Problem We Solve
 
 ### The Cost of AI Code Reviews
 - Every PR sends **mountains of context** to LLMs
@@ -33,7 +33,7 @@
 
 ---
 
-## ⚙️ How It Works
+## How It Works
 
 ```
 1. PR Created → 2. Git Analysis → 3. AST Parsing
@@ -43,7 +43,7 @@
 
 ---
 
-## 💰 Token Savings
+## Token Savings
 
 | Metric | Value |
 |--------|-------|
@@ -63,7 +63,7 @@
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 ### Backend
 - Python 3.11, FastAPI, SQLAlchemy, Celery
@@ -79,7 +79,7 @@
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
 git clone https://github.com/abdulboyprogramming-arch/codewhisper-pr.git
